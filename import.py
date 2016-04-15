@@ -1,12 +1,13 @@
+# -*- coding: utf-8 -*-
+
 import json
 import urllib2
 import os.path
 import os
-import collections
-import time
-import random
 import sys
+import hashlib
 
+user_agent = 'Wikimedia Chile stats importer 1.0 <dennis.tobar@wikimediachile.cl>'
 datos = {}
 archivos = {1: [
 # etapa 1
@@ -31,9 +32,10 @@ archivos = {1: [
 'ChFSA FD1197212220(1).djvu', 'ChFSA FD1197302120(1).djvu', 'ChFSA FD1197302150(1).djvu',
 'ChFSA FD1197303230(1).djvu', 'ChFSA FD1197304100(1).djvu', 'ChFSA FD1197305040(1).djvu']}
 
+# Obtenemos los datos de los discursos con indice y donde estan transcluidos (sí, es el término real)
 api = 'https://es.wikisource.org/w/api.php?action=query&format=json&prop=proofread%7Cimages%7Cinfo%7Ctranscludedin&list=&generator=allpages&imlimit=500&tinamespace=0&tishow=!redirect&tilimit=500&gapprefix=ChFSA&gapnamespace=104&gapfilterredir=nonredirects&gaplimit=100'
 req = urllib2.Request(api)
-req.add_header('User-Agent', 'Wikimedia Chile stats importer 1.0 <dennis.tobar@wikimediachile.cl>')
+req.add_header('User-Agent', user_agent)
 resp = urllib2.urlopen(req)
 data = resp.read()
 
@@ -42,20 +44,25 @@ data = json.loads(data)
 print 'Hola API!'
 
 if 'query' not in data.keys():
-    print 'Nope'
+    print 'Error en el acceso a la API de wikisource'
     sys.exit(3)
 
 for page_id, page_data in data['query']['pages'].items():
-    imagenes, discurso = page_data.get('images')[0].get('title').replace('Archivo:', ''), page_data.get('transcludedin')[0].get('title')
-    datos = {'nombre': imagenes, 'discurso': discurso}
-    datos['fase'] = [key for key, value in archivos.items() if imagenes in value][0]
+    archivo = page_data.get('images')[0].get('title').replace('Archivo:', '')
+    discurso = page_data.get('transcludedin')[0].get('title')
+    url_archivo = archivo.replace(" ", "_")
+    md5_commons = hashlib.md5(url_archivo)
+    primer, segundo = md5_commons.hexdigest()[:1], md5_commons.hexdigest()[:2]
+    commons = 'https://upload.wikimedia.org/wikipedia/commons/thumb/%s/%s/%s/page1-436px-%s.jpg' % (primer, segundo, url_archivo, url_archivo)
+    datos = {'nombre': archivo, 'discurso': discurso, 'commons': commons}
+    datos['fase'] = [key for key, value in archivos.items() if archivo in value][0]
 
-    print 'Procesando API de visitas de %s' % imagenes
+    print 'Procesando API de visitas de %s' % archivo
 
-    url = 'https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/commons.wikimedia.org/all-access/all-agents/%s/daily/20150801/20160430' % ('File:'+imagenes)
+    url = 'https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/commons.wikimedia.org/all-access/all-agents/%s/daily/20150801/20160430' % ('File:'+url_archivo)
 
     req = urllib2.Request(url)
-    req.add_header('User-Agent', 'Wikimedia Chile stats importer 1.0 <dennis.tobar@wikimediachile.cl>')
+    req.add_header('User-Agent', user_agent)
     resp = urllib2.urlopen(req)
     data = resp.read()
 
@@ -73,12 +80,12 @@ for page_id, page_data in data['query']['pages'].items():
 
     datos['visitas'] = visitas
 
-    api2 = 'https://es.wikisource.org/w/api.php?action=query&format=json&prop=contributors&generator=allpages&utf8=1&pclimit=500&gapprefix=%s&gapnamespace=102&gapfilterredir=nonredirects&gaplimit=500' % imagenes.replace('File:', '').replace(" ", "_")
+    api2 = 'https://es.wikisource.org/w/api.php?action=query&format=json&prop=contributors&generator=allpages&utf8=1&pclimit=500&gapprefix=%s&gapnamespace=102&gapfilterredir=nonredirects&gaplimit=500' % url_archivo
 
-    print '>> Obteniendo personas que ayudaron en %s' % imagenes
+    print '>> Obteniendo personas que ayudaron en %s' % archivo
 
     req = urllib2.Request(api2)
-    req.add_header('User-Agent', 'Wikimedia Chile stats importer 1.0 <dennis.tobar@wikimediachile.cl>')
+    req.add_header('User-Agent', user_agent)
     resp = urllib2.urlopen(req)
     data_contribuyentes = resp.read()
 
@@ -92,12 +99,12 @@ for page_id, page_data in data['query']['pages'].items():
     datos['paginas'] = len(resultados_contribuyentes['query']['pages'].items())
 
     # Veamos las visitas previas
-    fs = open('data/fsa/old/%s.json' % imagenes.replace('File:', '').replace(" ", "_"),'r')
+    fs = open('data/fsa/old/%s.json' % url_archivo,'r')
     visitas = json.loads(fs.read())
     fs.close()
 
     datos['visitas'].update(visitas)
 
-    archivo = open('data/fsa/%s.json' % imagenes.replace('File:', '').replace(" ", "_"), 'w')
+    archivo = open('data/fsa/%s.json' % url_archivo, 'w')
     archivo.write(json.dumps(datos))
     archivo.close()
