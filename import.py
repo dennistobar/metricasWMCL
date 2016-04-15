@@ -91,6 +91,13 @@ for page_id, page_data in data['query']['pages'].items():
     datos['contribuyentes'] = list(set(contribuyentes))
     datos['paginas'] = len(resultados_contribuyentes['query']['pages'].items())
 
-    archivo = open('data/%s.json' % imagenes.replace('File:', '').replace(" ", "_"), 'w')
+    # Veamos las visitas previas
+    fs = open('data/fsa/old/%s.json' % imagenes.replace('File:', '').replace(" ", "_"),'r')
+    visitas = json.loads(fs.read())
+    fs.close()
+
+    datos['visitas'].update(visitas)
+
+    archivo = open('data/fsa/%s.json' % imagenes.replace('File:', '').replace(" ", "_"), 'w')
     archivo.write(json.dumps(datos))
     archivo.close()

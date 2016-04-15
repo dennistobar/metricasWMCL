@@ -2,3 +2,4 @@ vendor
 *.lock
 tmp/*
 ejemplos
+data/*
