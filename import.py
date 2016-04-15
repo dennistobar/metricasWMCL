@@ -9,6 +9,7 @@ import hashlib
 
 user_agent = 'Wikimedia Chile stats importer 1.0 <dennis.tobar@wikimediachile.cl>'
 datos = {}
+resumen = {1:{},2:{},3:{}}
 archivos = {1: [
 # etapa 1
 'ChFSA FD1197205170(1).djvu', 'ChFSA FD1197204030(1).djvu', 'ChFSA FD1197204070(1).djvu',
@@ -108,3 +109,10 @@ for page_id, page_data in data['query']['pages'].items():
     archivo = open('data/fsa/%s.json' % url_archivo, 'w')
     archivo.write(json.dumps(datos))
     archivo.close()
+
+
+    resumen[datos['fase']][datos['nombre']] = {'nombre' : datos['discurso'], 'archivo': datos['nombre'], 'visitas': sum(datos['visitas'].values()), 'mes_anterior': datos['visitas']['201603']}
+
+fs = open('data/fsa.json', 'w')
+fs.write(json.dumps(resumen))
+fs.close()
