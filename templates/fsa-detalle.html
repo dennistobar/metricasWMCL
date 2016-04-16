@@ -1,0 +1,103 @@
+<div class="row">
+    <div class="col-md-9">
+        <!-- AREA CHART -->
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">Detalle FSA / {{@elemento->nombre_discurso}} <small>({{@elemento->nombre}})</small></h3>
+            </div>
+            <div class="box-body">
+                <div class="chart">
+                    <canvas id="myChart" style="height:250px"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="box box-primary">
+            <div class="box-body box-profile">
+                <img class="profile-user-img img-responsive" src="{{@elemento->commons}}" alt="Portada discurso">
+
+                <h4 class="profile-username text-center">{{@elemento->nombre_discurso}}</h4>
+
+                <dl class="dl-horizontal">
+                    <dt>Páginas</dt>
+                    <dd>{{@elemento->paginas}}</dd>
+                    <dt>Participantes ({{count(@elemento->contribuyentes)}})</dt>
+                    <dd>
+                        <repeat group="{{@elemento->contribuyentes}}" value="{{@usuario}}">
+                            {{@usuario}}
+                            <br />
+                        </repeat>
+                    </dd>
+                    <dt>Visitas totales</dt>
+                    <dd>{{array_sum(@meses)}}</dd>
+                </dl>
+
+                <a href="https://commons.wikimedia.org/wiki/File:{{@elemento->nombre}}" class="btn btn-primary btn-block"><b>Ver en Commons</b></a>
+                <a href="https://es.wikisource.org/wiki/{{@elemento->discurso}}" class="btn btn-primary btn-block"><b>Ver en discurso en Wikisource</b></a>
+                <a href="https://es.wikisource.org/wiki/Índice:{{@elemento->nombre}}" class="btn btn-primary btn-block"><b>Ver en índice en Wikisource</b></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="box box-primary table-responsive">
+            <table class="table table-bordered table-responsive">
+                <tr>
+                    <th>Año</th>
+                    <th>Ene</th>
+                    <th>Feb</th>
+                    <th>Mar</th>
+                    <th>Abr</th>
+                    <th>May</th>
+                    <th>Jun</th>
+                    <th>Jul</th>
+                    <th>Ago</th>
+                    <th>Sep</th>
+                    <th>Oct</th>
+                    <th>Nov</th>
+                    <th>Dic</th>
+                </tr>
+                <repeat group="{{@anos}}" value="{{@ano}}">
+                    <tr>
+                        <td>{{@ano}}</td>
+                        <repeat group="{{range(1,12)}}" value="{{@mes}}">
+                            <td class="text-center">{{@meses[@ano.(@mes < 10 ? '0'.$mes : $mes)]}}</td>
+                        </repeat>
+                    </tr>
+                </repeat>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="/js/chartjs/Chart.min.js"></script>
+<script>
+    var ctx = document.getElementById("myChart").getContext("2d")
+
+    var data = {
+        labels: [{{implode(",", array_keys(@meses))}}],
+        datasets: [{
+            label: "Visitas",
+            fillColor: "rgba(220,220,220,0.2)",
+            strokeColor: "rgba(220,220,220,1)",
+            pointColor: "rgba(220,220,220,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(220,220,220,1)",
+            data: [{{implode(",", array_values(@meses))}}]
+        }]
+    };
+
+
+    new Chart(ctx).Line(data, {
+        //Boolean - If we should show the scale at all
+        showScale: true,
+        //Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+        maintainAspectRatio: true,
+        //Boolean - whether to make the chart responsive to window resizing
+        responsive: true
+    });
+</script>
