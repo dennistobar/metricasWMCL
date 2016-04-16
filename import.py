@@ -51,11 +51,12 @@ if 'query' not in data.keys():
 for page_id, page_data in data['query']['pages'].items():
     archivo = page_data.get('images')[0].get('title').replace('Archivo:', '')
     discurso = page_data.get('transcludedin')[0].get('title')
+    nombre_discurso = discurso.split('/')[-1]
     url_archivo = archivo.replace(" ", "_")
     md5_commons = hashlib.md5(url_archivo)
     primer, segundo = md5_commons.hexdigest()[:1], md5_commons.hexdigest()[:2]
     commons = 'https://upload.wikimedia.org/wikipedia/commons/thumb/%s/%s/%s/page1-436px-%s.jpg' % (primer, segundo, url_archivo, url_archivo)
-    datos = {'nombre': archivo, 'discurso': discurso, 'commons': commons}
+    datos = {'nombre': archivo, 'discurso': discurso, 'commons': commons, 'nombre_discurso': nombre_discurso}
     datos['fase'] = [key for key, value in archivos.items() if archivo in value][0]
 
     print 'Procesando API de visitas de %s' % archivo
@@ -101,17 +102,36 @@ for page_id, page_data in data['query']['pages'].items():
 
     # Veamos las visitas previas
     fs = open('data/fsa/old/%s.json' % url_archivo,'r')
-    visitas = json.loads(fs.read())
+    visitas_old = json.loads(fs.read())
     fs.close()
 
+    datos['visitas'] = visitas_old
     datos['visitas'].update(visitas)
+
 
     archivo = open('data/fsa/%s.json' % url_archivo, 'w')
     archivo.write(json.dumps(datos))
     archivo.close()
 
 
-    resumen[datos['fase']][datos['nombre']] = {'nombre' : datos['discurso'], 'archivo': datos['nombre'], 'visitas': sum(datos['visitas'].values()), 'mes_anterior': datos['visitas']['201603']}
+    resumen[datos['fase']][datos['nombre']] = {
+        'nombre' : datos['nombre_discurso'],
+        'archivo': datos['nombre'],
+        'visitas': sum(datos['visitas'].values()),
+        'mes_anterior': datos['visitas']['201603'],
+        'mes_actual': datos['visitas']['201604'],
+        'paginas': datos['paginas']
+    }
+
+for kresumen in resumen.iterkeys():
+    resumen[kresumen]['resumen'] = {
+        'paginas': sum(map(lambda x: x.get('paginas'), resumen[kresumen].values())),
+        'visitas': sum(map(lambda x: x.get('visitas'), resumen[kresumen].values())),
+        'mes_anterior': sum(map(lambda x: x.get('mes_anterior'), resumen[kresumen].values())),
+        'mes_actual': sum(map(lambda x: x.get('mes_actual'), resumen[kresumen].values())),
+        'discursos': len(resumen[kresumen].keys())
+     }
+
 
 fs = open('data/fsa.json', 'w')
 fs.write(json.dumps(resumen))
