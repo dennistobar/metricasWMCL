@@ -6,12 +6,17 @@ $fat = \Base::instance();
 $fat->config('../config.ini');
 
 $fat->route('GET /', function (\Base $fat) {
-    $fat->mset(['contenido' => 'fsa.html']);
+    $fat->mset(['contenido' => 'fsa/fsa.html']);
+    echo \Template::instance()->render('page.html');
+});
+
+$fat->route('GET /fsa', function (\Base $fat) {
+    $fat->mset(['contenido' => 'fsa/fsa-resumen.html']);
     echo \Template::instance()->render('page.html');
 });
 
 $fat->route('GET /fsa/@num', function (\Base $fat) {
-    $fat->mset(['contenido' => 'fsa.html', 'titulo' => 'Fundación Salvador Allende']);
+    $fat->mset(['contenido' => 'fsa/fsa.html', 'titulo' => 'Discursos oficiales de Salvador Allende']);
     $num = $fat->get('PARAMS.num');
     $json = json_decode(file_get_contents('../data/fsa.json'));
     $resumen = $json->{$num}->resumen;
@@ -21,7 +26,7 @@ $fat->route('GET /fsa/@num', function (\Base $fat) {
 });
 
 $fat->route('GET /fsa/@num/@discurso', function (\Base $fat) {
-    $fat->mset(['contenido' => 'fsa-detalle.html', 'titulo' => 'Fundación Salvador Allende']);
+    $fat->mset(['contenido' => 'fsa/fsa-detalle.html', 'titulo' => 'Discursos oficiales de Salvador Allende']);
     $num = $fat->get('PARAMS.num');
     $discurso = str_replace(' ', '_', $fat->get('PARAMS.discurso'));
     $json = json_decode(file_get_contents("../data/fsa/{$discurso}.json"));
