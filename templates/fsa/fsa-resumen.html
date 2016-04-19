@@ -1,0 +1,52 @@
+<div class="row">
+    <div class="col-md-12">
+        <!-- AREA CHART -->
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">Resumen Discursos oficiales de Salvador Allende</h3>
+            </div>
+            <div class="box-body">
+                <table class="table table-bordered table-responsive table-striped">
+                    <thead>
+                        <tr>
+                            <th>Fase</th>
+                            <th>Discursos liberados</th>
+                            <th>Páginas transcritas</th>
+                            <th>Usuarios participantes</th>
+                            <th>Visitas mes anterior</th>
+                            <th>Visitas mes actual</th>
+                            <th>Total visitas</th>
+                            <th>Ver información</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <repeat group="{{@resumen}}" value="{{@fase}}" key="{{@num_fase}}">
+                            <tr>
+                                <td>{{@num_fase}}</td>
+                                <td class="text-center">{{@fase->discursos}}</td>
+                                <td class="text-center">{{@fase->paginas}}</td>
+                                <td class="text-center">-</td>
+                                <td class="text-center">{{@fase->mes_anterior}}</td>
+                                <td class="text-center">{{@fase->mes_actual}}</td>
+                                <td class="text-center">{{@fase->visitas}}</td>
+                                <td class="text-center"><a href="/fsa/{{@num_fase}}">Ver detalle</a></td>
+                            </tr>
+                        </repeat>
+                    </tbody>
+                    <tfoot>
+                        <tr class="info">
+                            <td>Total</td>
+                            <td class="text-center">{{@total.discursos}}</td>
+                            <td class="text-center">{{@total.paginas}}</td>
+                            <td class="text-center">-</td>
+                            <td class="text-center">{{@total.mes_anterior}}</td>
+                            <td class="text-center">{{@total.mes_actual}}</td>
+                            <td class="text-center">{{@total.visitas}}</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
