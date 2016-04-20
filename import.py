@@ -78,7 +78,7 @@ for page_id, page_data in data['query']['pages'].items():
     mes = visitas = {}
     for resultado in resultados['items']:
         timestamp, views = [resultado['timestamp'], resultado['views']]
-        mes_actual = int(timestamp[:6])
+        mes_actual = timestamp[:6]
         if mes_actual not in mes.keys():
             mes[mes_actual] = 0
         mes[mes_actual] += int(views)
@@ -116,13 +116,12 @@ for page_id, page_data in data['query']['pages'].items():
 
     anual = {}
     for mes, valor in datos['visitas'].items():
-        ano = str(mes)[:4]
+        ano = int(str(mes)[:4])
         if ano not in anual:
             anual[ano] = 0
         anual[ano] += valor
 
     datos['anuales'] = anual
-
     archivo = open('data/fsa/%s.json' % url_archivo, 'w')
     archivo.write(json.dumps(datos))
     archivo.close()
@@ -130,7 +129,7 @@ for page_id, page_data in data['query']['pages'].items():
     resumen[datos['fase']][datos['nombre']] = {
         'nombre' : datos['nombre_discurso'],
         'archivo': datos['nombre'],
-        'visitas': sum(datos['visitas'].values()),
+        'visitas': sum(datos['anuales'].values()),
         'mes_anterior': datos['visitas'][mesAnterior],
         'mes_actual': datos['visitas'][mesActual],
         'paginas': datos['paginas']

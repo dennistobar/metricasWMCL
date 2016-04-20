@@ -70,8 +70,7 @@
                     <tr>
                         <td>{{@ano}}</td>
                         <repeat group="{{range(1,12)}}" value="{{@mes}}">
-                            <td class="text-center">{{@meses[@ano.(@mes
-                                < 10 ? '0'.$mes : $mes)]}}</td>
+                            <td class="text-center">{{@meses[@ano.(@mes < 10 ? '0'.$mes : $mes)]}}</td>
                         </repeat>
                     </tr>
                 </repeat>
