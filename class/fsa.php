@@ -1,8 +1,9 @@
 <?php
 
-class fsa{
-
-    public function index(\Base $fat){
+class fsa
+{
+    public function index(\Base $fat)
+    {
         $fat->mset(['contenido' => 'fsa/fsa-resumen.html']);
         $json = json_decode(file_get_contents('../data/fsa.json'));
         $resumen = [];
@@ -16,21 +17,21 @@ class fsa{
             'total.mes_actual' => array_sum(array_map(function ($f) {return $f->mes_actual;}, $resumen)),
             'total.visitas' => array_sum(array_map(function ($f) {return $f->visitas;}, $resumen)),
         ]);
-        echo \Template::instance()->render('page.html');
     }
 
-    public function fase(\Base $fat){
-        $fat->mset(['contenido' => 'fsa/fsa.html', 'titulo' => 'Discursos oficiales de Salvador Allende']);
+    public function fase(\Base $fat)
+    {
+        $fat->mset(['contenido' => 'fsa/fsa.html']);
         $num = $fat->get('PARAMS.num');
         $json = json_decode(file_get_contents('../data/fsa.json'));
         $resumen = $json->{$num}->resumen;
         unset($json->{$num}->resumen);
         $fat->mset(['archivos' => $json->{$num}, 'resumen' => $resumen]);
-        echo \Template::instance()->render('page.html');
     }
 
-    public function discurso(\Base $fat){
-        $fat->mset(['contenido' => 'fsa/fsa-detalle.html', 'titulo' => 'Discursos oficiales de Salvador Allende']);
+    public function discurso(\Base $fat)
+    {
+        $fat->mset(['contenido' => 'fsa/fsa-detalle.html']);
         $num = $fat->get('PARAMS.num');
         $discurso = str_replace(' ', '_', $fat->get('PARAMS.discurso'));
         $json = json_decode(file_get_contents("../data/fsa/{$discurso}.json"));
@@ -38,7 +39,15 @@ class fsa{
         ksort($visitas);
         $anos = array_unique(array_map(function ($f) { return substr($f, 0, 4); }, array_keys($visitas)));
         $fat->mset(['elemento' => $json, 'meses' => $visitas, 'anos' => $anos]);
-        echo \Template::instance()->render('page.html');
     }
 
+    public function beforeroute(\Base $fat)
+    {
+        $fat->mset(['titulo' => 'Discursos oficiales de Salvador Allende', 'fecha' => file_get_contents('../data/fsa-fecha.txt')]);
+    }
+
+    public function afterroute(\Base $fat)
+    {
+        echo \Template::instance()->render('page.html');
+    }
 }

@@ -1,13 +1,19 @@
 # -*- coding: utf-8 -*-
-
 import json
 import urllib2
 import os.path
 import os
 import sys
 import hashlib
+from time import strftime
+from datetime import datetime
+
+from dateutil.relativedelta import relativedelta
 
 user_agent = 'Wikimedia Chile stats importer 1.0 <dennis.tobar@wikimediachile.cl>'
+mesActual = strftime('%Y%m', datetime.today().timetuple())
+mesAnterior = strftime('%Y%m', (datetime.today() - relativedelta(months=1)).timetuple())
+
 datos = {}
 resumen = {1:{},2:{},3:{}}
 archivos = {1: [
@@ -61,7 +67,7 @@ for page_id, page_data in data['query']['pages'].items():
 
     print 'Procesando API de visitas de %s' % archivo
 
-    url = 'https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/commons.wikimedia.org/all-access/all-agents/%s/daily/20150801/20160430' % ('File:'+url_archivo)
+    url = 'https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/commons.wikimedia.org/all-access/all-agents/%s/daily/20150801/20991231' % ('File:'+url_archivo)
 
     req = urllib2.Request(url)
     req.add_header('User-Agent', user_agent)
@@ -118,8 +124,8 @@ for page_id, page_data in data['query']['pages'].items():
         'nombre' : datos['nombre_discurso'],
         'archivo': datos['nombre'],
         'visitas': sum(datos['visitas'].values()),
-        'mes_anterior': datos['visitas']['201603'],
-        'mes_actual': datos['visitas']['201604'],
+        'mes_anterior': datos['visitas'][mesAnterior],
+        'mes_actual': datos['visitas'][mesActual],
         'paginas': datos['paginas']
     }
 
@@ -132,7 +138,10 @@ for kresumen in resumen.iterkeys():
         'discursos': len(resumen[kresumen].keys())
      }
 
-
 fs = open('data/fsa.json', 'w')
 fs.write(json.dumps(resumen))
+fs.close()
+
+fs = open('data/fsa-fecha.txt', 'w');
+fs.write(strftime("%d-%m-%Y %H:%M"))
 fs.close()
