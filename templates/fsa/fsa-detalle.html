@@ -6,11 +6,14 @@
                 <h3 class="box-title">{{@elemento->nombre_discurso}} <small>({{@elemento->nombre}})</small></h3>
                 <div class="box-tools pull-right">
                     <small>Actualizado <span class="badge bg-blue">{{@fecha}}</span></small>
-              </div>
+                </div>
             </div>
             <div class="box-body">
                 <div class="chart">
                     <canvas id="myChart" style="height:250px"></canvas>
+                </div>
+                <div class="chart">
+                    <canvas id="myChartAnual" style="height:250px"></canvas>
                 </div>
             </div>
         </div>
@@ -67,7 +70,8 @@
                     <tr>
                         <td>{{@ano}}</td>
                         <repeat group="{{range(1,12)}}" value="{{@mes}}">
-                            <td class="text-center">{{@meses[@ano.(@mes < 10 ? '0'.$mes : $mes)]}}</td>
+                            <td class="text-center">{{@meses[@ano.(@mes
+                                < 10 ? '0'.$mes : $mes)]}}</td>
                         </repeat>
                     </tr>
                 </repeat>
@@ -78,24 +82,45 @@
 
 <script src="/js/chartjs/Chart.min.js"></script>
 <script>
-    var ctx = document.getElementById("myChart").getContext("2d")
-
-    var data = {
-        labels: [{{implode(",", array_keys(@meses))}}],
-        datasets: [{
-            label: "Visitas",
-            fillColor: "rgba(220,220,220,0.2)",
-            strokeColor: "rgba(220,220,220,1)",
-            pointColor: "rgba(220,220,220,1)",
-            pointStrokeColor: "#fff",
-            pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(220,220,220,1)",
-            data: [{{implode(",", array_values(@meses))}}]
-        }]
-    };
+    var ctx = document.getElementById("myChart").getContext("2d"),
+        ctxAnual = document.getElementById("myChartAnual").getContext("2d"),
+        data = {
+            labels: [{{implode(",", array_keys(@meses))}}],
+            datasets: [{
+                label: "Visitas",
+                fillColor: "rgba(220,220,220,0.2)",
+                strokeColor: "rgba(220,220,220,1)",
+                pointColor: "rgba(220,220,220,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(220,220,220,1)",
+                data: [{{implode(",", array_values(@meses))}}]
+            }]
+        },
+        dataAnual = {
+            labels: [{{implode(",", array_keys(@anual))}}],
+            datasets: [{
+                label: "Visitas",
+                fillColor: "rgba(220,220,220,0.2)",
+                strokeColor: "rgba(220,220,220,1)",
+                pointColor: "rgba(220,220,220,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(220,220,220,1)",
+                data: [{{implode(",", array_values(@anual))}}]
+            }]
+        };
 
 
     new Chart(ctx).Line(data, {
+        //Boolean - If we should show the scale at all
+        showScale: true,
+        //Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+        maintainAspectRatio: true,
+        //Boolean - whether to make the chart responsive to window resizing
+        responsive: true
+    });
+    new Chart(ctxAnual).Line(dataAnual, {
         //Boolean - If we should show the scale at all
         showScale: true,
         //Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container

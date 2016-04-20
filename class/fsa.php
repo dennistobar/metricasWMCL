@@ -36,9 +36,11 @@ class fsa
         $discurso = str_replace(' ', '_', $fat->get('PARAMS.discurso'));
         $json = json_decode(file_get_contents("../data/fsa/{$discurso}.json"));
         $visitas = (array) $json->visitas;
+        $anual = (array) $json->anuales;
         ksort($visitas);
-        $anos = array_unique(array_map(function ($f) { return substr($f, 0, 4); }, array_keys($visitas)));
-        $fat->mset(['elemento' => $json, 'meses' => $visitas, 'anos' => $anos]);
+        ksort($anual);
+        $anos = array_keys($anual);
+        $fat->mset(['elemento' => $json, 'meses' => $visitas, 'anos' => $anos, 'anual' => $anual]);
     }
 
     public function beforeroute(\Base $fat)

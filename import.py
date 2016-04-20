@@ -114,11 +114,18 @@ for page_id, page_data in data['query']['pages'].items():
     datos['visitas'] = visitas_old
     datos['visitas'].update(visitas)
 
+    anual = {}
+    for mes, valor in datos['visitas'].items():
+        ano = str(mes)[:4]
+        if ano not in anual:
+            anual[ano] = 0
+        anual[ano] += valor
+
+    datos['anuales'] = anual
 
     archivo = open('data/fsa/%s.json' % url_archivo, 'w')
     archivo.write(json.dumps(datos))
     archivo.close()
-
 
     resumen[datos['fase']][datos['nombre']] = {
         'nombre' : datos['nombre_discurso'],
