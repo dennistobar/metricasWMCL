@@ -61,11 +61,13 @@ for curso in data_cursos.values():
         print continuacion
 
     suma_total = ns_principal = ns_otros = suma_ns_principal = 0
+    articulos = []
     for estudiante, datos in listado_estudiantes.items():
         suma_total += sum(map(lambda x: abs(x.get('tamano')), datos['contribs']))
         ns_principal += len(filter(lambda x: x.get('namespace') == 0, datos['contribs']))
         ns_otros += len(filter(lambda x: x.get('namespace') != 0, datos['contribs']))
         suma_ns_principal = sum(map(lambda x: abs(x.get('tamano')), filter(lambda x: x.get('namespace') == 0, datos['contribs'])))
+        articulos.extend(datos['articulos'])
         listado_estudiantes[estudiante]['contador'] = {
             'ediciones': {
                 'principal' : len(filter(lambda x: x.get('namespace') == 0, datos['contribs'])),
@@ -87,7 +89,8 @@ for curso in data_cursos.values():
             'estudiantes': len(listado_estudiantes.keys()),
             'profesores' : len(profesores),
             'voluntarios_linea' : len(voluntarios_linea),
-            'voluntarios_campus' : len(voluntarios_campus)
+            'voluntarios_campus' : len(voluntarios_campus),
+            'articulos': len(articulos)
         },
         'usuarios':{
             'estudiantes': listado_estudiantes.keys(),
@@ -96,7 +99,8 @@ for curso in data_cursos.values():
             'voluntarios_campus': map(lambda x: x.get('username'), voluntarios_campus)
         },
         'tamano' : { 'principal': suma_ns_principal, 'otros' : suma_total - suma_ns_principal, 'total' : suma_total },
-        'listado_estudiantes' : listado_estudiantes
+        'listado_estudiantes' : listado_estudiantes,
+        'aerticulos' : articulos
         }
 
     f = open('data/educacion/'+str(curso.get('id'))+'.json', 'w')

@@ -1,0 +1,40 @@
+<div class="row">
+    <div class="col-md-9">
+        <!-- AREA CHART -->
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">{{@nombre}}</h3>
+                <div class="box-tools pull-right">
+                    <small>Actualizado <span class="badge bg-blue">{{@fecha}}</span></small>
+                </div>
+            </div>
+            <div class="box-body">
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="box box-primary">
+            <div class="box-body box-profile">
+
+                <h4 class="profile-username text-center">{{@nombre}}</h4>
+
+                <dl class="dl-horizontal">
+                    <dt>Alumnos</dt>
+                    <dd>{{@curso->cantidad->estudiantes}}</dd>
+                    <dt>Profesores</dt>
+                    <dd>{{@curso->cantidad->profesores}}</dd>
+                    <dt>Voluntarios</dt>
+                    <dd>{{@curso->cantidad->voluntarios_linea + @curso->cantidad->voluntarios_campus}}</dd>
+                    <dt>Artículos</dt>
+                    <dd>{{@curso->cantidad->articulos}}</dd>
+                    <dt>Bytes añadidos</dt>
+                    <dd>{{@curso->tamano->total}}</dd>
+                </dl>
+
+                <a href="https://es.wikipedia.org/wiki/Programa_educativo:{{@curso->nombre}}" class="btn btn-primary btn-block"><b>Ver curso en Wikipedia</b></a>
+
+            </div>
+        </div>
+    </div>
+</div>
