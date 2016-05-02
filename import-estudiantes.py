@@ -2,13 +2,14 @@
 import json
 import urllib2, urllib
 import re
+from time import strftime
 
 user_agent = 'Wikimedia Chile stats importer 1.0 <dennis.tobar@wikimediachile.cl>'
 
 with open('data/cursos.json') as data_file:
     cursos = json.load(data_file)
 
-api = 'https://es.wikipedia.org/w/api.php?action=liststudents&format=json&courseids=%s&prop=username&group=1' % "|".join(cursos.get('activos'))
+api = 'https://es.wikipedia.org/w/api.php?action=liststudents&format=json&courseids=%s&prop=username&group=1' % "|".join(cursos.get('activos').keys())
 req = urllib2.Request(api)
 req.add_header('User-Agent', user_agent)
 resp = urllib2.urlopen(req)
@@ -98,4 +99,7 @@ for curso in data_cursos.values():
 
     f = open('data/educacion/'+str(curso.get('id'))+'.json', 'w')
     f.write(json.dumps(datos_curso))
+    f.close()
+    f = open('data/educacion/actualizacion-'+str(curso.get('id'))+'.txt', 'w')
+    f.write(strftime("%d-%m-%Y %H:%M"))
     f.close()
