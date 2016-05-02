@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 import urllib2, urllib
-import re
+import re, os
 from time import strftime
 
 user_agent = 'Wikimedia Chile stats importer 1.0 <dennis.tobar@wikimediachile.cl>'
@@ -9,7 +9,9 @@ user_agent = 'Wikimedia Chile stats importer 1.0 <dennis.tobar@wikimediachile.cl
 with open('data/cursos.json') as data_file:
     cursos = json.load(data_file)
 
-api = 'https://es.wikipedia.org/w/api.php?action=liststudents&format=json&courseids=%s&prop=username&group=1' % "|".join(cursos.get('activos').keys())
+cursos = map(lambda x: x.get('codigo'), filter(lambda x: x.get('activo') == True, cursos))
+
+api = 'https://es.wikipedia.org/w/api.php?action=liststudents&format=json&courseids=%s&prop=username&group=1' % "|".join(cursos)
 req = urllib2.Request(api)
 req.add_header('User-Agent', user_agent)
 resp = urllib2.urlopen(req)
