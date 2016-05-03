@@ -131,7 +131,7 @@ for page_id, page_data in data['query']['pages'].items():
         'archivo': datos['nombre'],
         'visitas': sum(datos['anuales'].values()),
         'mes_anterior': datos['visitas'][mesAnterior],
-        'mes_actual': datos['visitas'][mesActual] if mes_actual not in datos['visitas'].keys() else 0,
+        'mes_actual': datos['visitas'][mesActual] if mesActual in datos['visitas'].keys() else 0,
         'paginas': datos['paginas']
     }
 
