@@ -38,3 +38,114 @@
         </div>
     </div>
 </div>
+<div class="row">
+    <div class="col-md-6">
+        <!-- AREA CHART -->
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">Ediciones</h3>
+            </div>
+            <div class="box-body">
+                <div class="chart">
+                    <div id="ediciones-chart" style="height: 400px">
+                        <svg></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <!-- AREA CHART -->
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">Tamaño</h3>
+            </div>
+            <div class="box-body">
+                <div class="chart">
+                    <div id="tamano-chart" style="height: 400px">
+                        <svg></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="/js/nv.d3/nv.d3.min.js" charset="utf-8"></script>
+<link href="/css/nv.d3.css" type="text/css" rel="stylesheet" />
+<script>
+    var data_ediciones = [
+        {'key': "Ediciones Otros espacios", 'color': '#27AA65', 'values': [
+            {~ @texto = array(); ~}
+            <repeat group="{{@curso->listado_estudiantes}}" value="{{@estudiante}}" key="{{@usuario}}">
+            {~ @tmp = '{';
+                @tmp .= "'value':".@estudiante->contador->ediciones->otros.',';
+                @tmp .= "'label': \"@usuario\"";
+                @tmp .= '}';
+            array_push(@texto, @tmp);
+            ~}
+            </repeat>
+            {{implode(",", @texto)}}
+        ]},
+        {'key': "Ediciones Espacio Principal", 'color': '#CC0000', 'values': [
+            {~ @texto = array(); ~}
+            <repeat group="{{@curso->listado_estudiantes}}" value="{{@estudiante}}" key="{{@usuario}}">
+            {~ @tmp = '{';
+                @tmp .= "'value':".@estudiante->contador->ediciones->principal.',';
+                @tmp .= "'label': \"@usuario\"";
+                @tmp .= '}';
+            array_push(@texto, @tmp);
+            ~}
+            </repeat>
+            {{implode(",", @texto)}}
+        ]}
+    ],
+    data_tamano = [
+        {'key': "Ediciones Otros espacios", 'color': '#27AA65', 'values': [
+            {~ @texto = array(); ~}
+            <repeat group="{{@curso->listado_estudiantes}}" value="{{@estudiante}}" key="{{@usuario}}">
+            {~ @tmp = '{';
+                @tmp .= "'value':".@estudiante->contador->tamano->otros.',';
+                @tmp .= "'label': \"@usuario\"";
+                @tmp .= '}';
+            array_push(@texto, @tmp);
+            ~}
+            </repeat>
+            {{implode(",", @texto)}}
+        ]},
+        {'key': "Ediciones Espacio Principal", 'color': '#CC0000', 'values': [
+            {~ @texto = array(); ~}
+            <repeat group="{{@curso->listado_estudiantes}}" value="{{@estudiante}}" key="{{@usuario}}">
+            {~ @tmp = '{';
+                @tmp .= "'value':".@estudiante->contador->tamano->principal.',';
+                @tmp .= "'label': \"@usuario\"";
+                @tmp .= '}';
+            array_push(@texto, @tmp);
+            ~}
+            </repeat>
+            {{implode(",", @texto)}}
+        ]}
+    ];
+    nv.addGraph(function() {
+        var chart = nv.models.multiBarHorizontalChart()
+        .x(function(d) { return d.label })
+        .y(function(d) { return d.value })
+        .margin({top: 30, right: 20, bottom: 50, left: 175})
+        .showValues(true)           //Show bar value next to each bar.
+        .tooltips(true)             //Show tooltips on hover.
+        .showControls(true)        //Allow user to switch between "Grouped" and "Stacked" mode.
+        .stacked(true);
+
+    d3.select('#ediciones-chart svg')
+        .datum(data_ediciones)
+        .call(chart);
+
+        d3.select('#tamano-chart svg')
+            .datum(data_tamano)
+            .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+    });
+</script>

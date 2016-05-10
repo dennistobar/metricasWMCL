@@ -100,7 +100,7 @@ for curso in data_cursos.values():
         },
         'tamano' : { 'principal': suma_ns_principal, 'otros' : suma_total - suma_ns_principal, 'total' : suma_total },
         'listado_estudiantes' : listado_estudiantes,
-        'aerticulos' : articulos
+        'articulos' : articulos
         }
 
     f = open('data/educacion/'+str(curso.get('id'))+'.json', 'w')
