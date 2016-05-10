@@ -19,7 +19,10 @@ class educacion
         }
         $datos_curso = array_pop($datos_curso);
         $datos = file_get_contents('../data/educacion/'.$datos_curso->codigo.'.json');
+        $resumen = file_get_contents('../data/educacion/resumen-'.$datos_curso->codigo.'.json');
         $fat->mset([
+            'resumen' => json_decode($resumen),
+            'raw.resumen' => $resumen,
             'datos' => $datos_curso,
             'fecha' => file_get_contents('../data/educacion/actualizacion-'.$datos_curso->codigo.'.txt'),
             'curso' => json_decode($datos),

@@ -103,8 +103,29 @@ for curso in data_cursos.values():
         'articulos' : articulos
         }
 
+    contribs = {}
+    graficos = {'tamano': {'principal': [], 'otros': []}, 'ediciones': {'principal': [], 'otros': []}, 'diario': []}
+    for estudiante, datos in listado_estudiantes.items():
+        graficos.get('tamano').get('principal').append({ 'usuario': estudiante, 'conteo': datos.get('contador').get('tamano').get('principal') })
+        graficos.get('tamano').get('otros').append({ 'usuario': estudiante, 'conteo': datos.get('contador').get('tamano').get('otros') })
+        graficos.get('ediciones').get('principal').append({ 'usuario': estudiante, 'conteo': datos.get('contador').get('ediciones').get('principal') })
+        graficos.get('ediciones').get('otros').append({ 'usuario': estudiante, 'conteo': datos.get('contador').get('ediciones').get('otros') })
+        for contribucion in datos.get('contribs'):
+            print contribucion
+            fecha = contribucion.get('fecha')[:8]
+            if fecha not in contribs.keys():
+                contribs[fecha] = 0
+            contribs[fecha] += 1
+
+    for fecha, valor in contribs.items():
+        graficos.get('diario').append({ 'dia': fecha, 'conteo': valor })
+
+
     f = open('data/educacion/'+str(curso.get('id'))+'.json', 'w')
     f.write(json.dumps(datos_curso))
+    f.close()
+    f = open('data/educacion/resumen-'+str(curso.get('id'))+'.json', 'w')
+    f.write(json.dumps(graficos))
     f.close()
     f = open('data/educacion/actualizacion-'+str(curso.get('id'))+'.txt', 'w')
     f.write(strftime("%d-%m-%Y %H:%M"))
